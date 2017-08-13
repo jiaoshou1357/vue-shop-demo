@@ -1,0 +1,21 @@
+*{padding:0px;margin:0px;list-style-type:none;}
+#app{
+	box-sizing:border-box;
+	padding:20px 30px;
+	width:100%;
+	margin:0px auto;
+}
+#nav ul li{
+	line-height: 50px;
+}
+#nav ul li:nth-child(1){
+	background:#000;
+	color:white;
+	font-size:20px;
+}
+#nav ul li span{
+	display:inline-block;
+	width:120px;
+	line-height:50px;
+	text-align: center;
+}

@@ -24,33 +24,61 @@
   			<span>
   				<strong>产品金额</strong>
   			</span>
+        <span>
+          <strong>小飞飞作品</strong>
+        </span>
   		</li>
   	</ul>
   </div>
   <div id="list">
   	<ul>
-  		<li>
-  			<ul>
-  				<li></li>
-  				<li></li>
-  				<li></li>
-  				<li></li>
+  		<li v-for="(item,index) in pro_lists">
+  			<ul class="info">
+          <li style="line-height:178px;"><span class="check_button" v-bind:class="{checked:item.isChecked}" v-on:click="checkThis(item)"></span></li>
+  				<li>
+            <div class="pro_img"><img v-bind:src="item.imgsrc"></div>
+            <p>{{item.name}}</p>
+          </li>
+  				<li style="line-height:178px;">{{item.price|formateNumer}}</li>
+  				<li style="line-height:178px;">
+            <a class="com" v-on:click="add_reduce(item,-1)">-</a>
+            <input v-model="item.number" class="entry_input">
+            <a class="com" v-on:click="add_reduce(item,1)">+</a></li>
+  				<li style="line-height:178px;">{{item.number*item.price|formateNumer}}</li>
+          <li><div style="width:30px;margin-top:75px;"><img src="imgs/delete.png" v-on:click="deleteThis(index)" ></div></li>
   			</ul>
   		</li>
   	</ul>
   </div>
+  <div id="bottom">
+    <div class="b_left">
+      <a >全选</a><span class="check_button level" v-bind:class="{checked:checkALLIt}" v-on:click="checkAll(1)"></span>
+      <a >反选</a><span class="check_button level" v-bind:class="{checked:!checkALLIt}" v-on:click="checkAll(-1)"></span>
+    </div>
+    <div class="b_right">
+      总金额:{{totalMoney|formateNumer}}
+    </div>
+  </div>
+  <div id="pay_section">
+     <div class="someone_pay" v-bind:class="{pay_checked:isMe}" v-on:click="isMe=true">找人代付</div>
+     <div class="self_pay" v-bind:class="{pay_checked:!isMe}" v-on:click="isMe=false">自己付款</div>
+  </div>
 </div>
 <script type="text/javascript">
+   $("body").css("background","#978")
 	 new Vue({
 	 	 el:"#app",
 	 	 data:{
             pro_lists:[
-              {"name":"上衣","price":12,"number":2,"imgsrc":""},
-              {"name":"外套","price":12,"number":2,"imgsrc":""},
-              {"name":"裤子","price":12,"number":2,"imgsrc":""},
-              {"name":"袜子","price":12,"number":2,"imgsrc":""},
-              {"name":"裙子","price":12,"number":2,"imgsrc":""},
-            ]
+              {"name":"上衣","price":12,"number":2,"imgsrc":"./imgs/1.jpg"},
+              {"name":"外套","price":12,"number":2,"imgsrc":"./imgs/2.jpg"},
+              {"name":"裤子","price":12,"number":2,"imgsrc":"./imgs/3.jpg"},
+              {"name":"袜子","price":12,"number":2,"imgsrc":"./imgs/4.jpg"},
+              {"name":"裙子","price":12,"number":2,"imgsrc":"./imgs/1.jpg"},
+            ],
+            checkALLIt:false,
+            total:0,
+            isMe:false
 	 	 },
 	 	 mounted:{
            /*this.$http.get('../sds.json').then(function(response){
@@ -61,13 +89,77 @@
            })*/
 	 	 },
 	 	 methods:{
+      deleteThis:function(index){
 
+         this.pro_lists.splice(index,1)
+      },
+      checkAll:function(num){
+            this.checkDefault()
+            var _this=this
+            if(num==1){
+              _this.checkALLIt=true
+              this.pro_lists.forEach(function(value,index){
+                    value.isChecked=true
+              });
+            }else{
+              this.checkALLIt=false
+              this.pro_lists.forEach(function(value,index){
+                if(value.isChecked==true){
+                  value.isChecked=false
+                }else{
+                  value.isChecked=true
+                }
+              })
+            }
+
+      },
+      add_reduce:function(item,num){
+         if(num==1){
+          item.number++
+         }else{
+          if(item.number==1){
+            item.number=1
+          }else{
+            item.number--
+          }
+         }
+      },
+
+      checkThis:function(item){
+           this.checkDefault()
+           if(item.isChecked==true){
+            item.isChecked=false
+           }else{
+            item.isChecked=true
+           }
+      },
+       checkDefault:function(){
+         var _this=this
+        this.pro_lists.forEach(function(value,index){
+            if(value.isChecked==undefined){
+                 _this.$set(value,"isChecked",false)
+           }
+        })
+       }
+       
 	 	 },
 	 	 computed:{
+        totalMoney:function(){
+          var _this=this
+          this.total=0
 
+          this.pro_lists.forEach(function(value,index){
+              if(value.isChecked){
+                _this.total+=value.number*value.price
+              }
+          })
+          return _this.total
+        }
 	 	 },
 	 	 filters:{
-
+        formateNumer:function(value){
+          return  value.toFixed(2)+"元" 
+        }
 	 	 }
 	 })
 </script>  
